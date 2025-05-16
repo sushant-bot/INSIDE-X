@@ -13,10 +13,31 @@ import { AnimatedBackgroundContainer } from "@/components/ui/animated-background
 import { AnimatedButton } from "@/components/ui/animated-button"
 import { AnimatedText } from "@/components/ui/animated-text"
 
+// Define types for our form data
+type PrivacySettings = {
+  profileVisibility: string;
+  messagePermissions: string;
+  contentVisibility: string;
+}
+
+type ContentPreferences = {
+  topics: string[];
+  contentTypes: string[];
+  languages: string[];
+}
+
+type FormData = {
+  interests: string[];
+  avatar: string | null;
+  username: string;
+  privacySettings: PrivacySettings;
+  contentPreferences: ContentPreferences;
+}
+
 export default function OnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(0)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     interests: [],
     avatar: null,
     username: "",
@@ -49,7 +70,7 @@ export default function OnboardingPage() {
     }
   }
 
-  const updateFormData = (field, value) => {
+  const updateFormData = (field: keyof FormData, value: any) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -65,7 +86,7 @@ export default function OnboardingPage() {
       component: (
         <InterestsStep
           selectedInterests={formData.interests}
-          updateInterests={(interests) => updateFormData("interests", interests)}
+          updateInterests={(interests: string[]) => updateFormData("interests", interests)}
         />
       ),
       title: "Select Your Interests",
@@ -75,8 +96,8 @@ export default function OnboardingPage() {
         <AvatarStep
           avatar={formData.avatar}
           username={formData.username}
-          updateAvatar={(avatar) => updateFormData("avatar", avatar)}
-          updateUsername={(username) => updateFormData("username", username)}
+          updateAvatar={(avatar: string | null) => updateFormData("avatar", avatar)}
+          updateUsername={(username: string) => updateFormData("username", username)}
         />
       ),
       title: "Create Your Profile",
@@ -85,7 +106,7 @@ export default function OnboardingPage() {
       component: (
         <PrivacyStep
           privacySettings={formData.privacySettings}
-          updatePrivacySettings={(settings) => updateFormData("privacySettings", settings)}
+          updatePrivacySettings={(settings: PrivacySettings) => updateFormData("privacySettings", settings)}
         />
       ),
       title: "Privacy Settings",
@@ -94,7 +115,7 @@ export default function OnboardingPage() {
       component: (
         <ContentPreferencesStep
           contentPreferences={formData.contentPreferences}
-          updateContentPreferences={(prefs) => updateFormData("contentPreferences", prefs)}
+          updateContentPreferences={(prefs: ContentPreferences) => updateFormData("contentPreferences", prefs)}
         />
       ),
       title: "Content Preferences",
@@ -102,7 +123,7 @@ export default function OnboardingPage() {
   ]
 
   const variants = {
-    enter: (direction) => ({
+    enter: (direction: number) => ({
       x: direction > 0 ? 1000 : -1000,
       opacity: 0,
     }),
@@ -110,7 +131,7 @@ export default function OnboardingPage() {
       x: 0,
       opacity: 1,
     },
-    exit: (direction) => ({
+    exit: (direction: number) => ({
       x: direction < 0 ? 1000 : -1000,
       opacity: 0,
     }),

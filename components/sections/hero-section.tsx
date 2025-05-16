@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Pacifico } from "next/font/google"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { AnimatedText } from "@/components/ui/animated-text"
 import { AnimatedButton } from "@/components/ui/animated-button"
@@ -198,13 +199,15 @@ export default function HeroSection({
             animate="visible"
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <AnimatedButton
-              size="lg"
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0"
-              glowColor="rgba(147, 51, 234, 0.5)"
-            >
-              Get Started
-            </AnimatedButton>
+            <Link href="/auth">
+              <AnimatedButton
+                size="lg"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0"
+                glowColor="rgba(147, 51, 234, 0.5)"
+              >
+                Get Started
+              </AnimatedButton>
+            </Link>
             <AnimatedButton
               size="lg"
               variant="outline"
