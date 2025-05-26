@@ -13,31 +13,10 @@ import { AnimatedBackgroundContainer } from "@/components/ui/animated-background
 import { AnimatedButton } from "@/components/ui/animated-button"
 import { AnimatedText } from "@/components/ui/animated-text"
 
-// Define types for our form data
-type PrivacySettings = {
-  profileVisibility: string;
-  messagePermissions: string;
-  contentVisibility: string;
-}
-
-type ContentPreferences = {
-  topics: string[];
-  contentTypes: string[];
-  languages: string[];
-}
-
-type FormData = {
-  interests: string[];
-  avatar: string | null;
-  username: string;
-  privacySettings: PrivacySettings;
-  contentPreferences: ContentPreferences;
-}
-
 export default function OnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(0)
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState({
     interests: [],
     avatar: null,
     username: "",
@@ -70,7 +49,7 @@ export default function OnboardingPage() {
     }
   }
 
-  const updateFormData = (field: keyof FormData, value: any) => {
+  const updateFormData = (field: keyof typeof formData, value: any) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -96,7 +75,7 @@ export default function OnboardingPage() {
         <AvatarStep
           avatar={formData.avatar}
           username={formData.username}
-          updateAvatar={(avatar: string | null) => updateFormData("avatar", avatar)}
+          updateAvatar={(avatar: File | null) => updateFormData("avatar", avatar)}
           updateUsername={(username: string) => updateFormData("username", username)}
         />
       ),
@@ -106,7 +85,7 @@ export default function OnboardingPage() {
       component: (
         <PrivacyStep
           privacySettings={formData.privacySettings}
-          updatePrivacySettings={(settings: PrivacySettings) => updateFormData("privacySettings", settings)}
+          updatePrivacySettings={(settings: typeof formData.privacySettings) => updateFormData("privacySettings", settings)}
         />
       ),
       title: "Privacy Settings",
@@ -115,7 +94,7 @@ export default function OnboardingPage() {
       component: (
         <ContentPreferencesStep
           contentPreferences={formData.contentPreferences}
-          updateContentPreferences={(prefs: ContentPreferences) => updateFormData("contentPreferences", prefs)}
+          updateContentPreferences={(prefs: typeof formData.contentPreferences) => updateFormData("contentPreferences", prefs)}
         />
       ),
       title: "Content Preferences",
@@ -167,8 +146,7 @@ export default function OnboardingPage() {
             </div>
             <Progress
               value={progress}
-              className="h-1 mt-4 bg-white/10"
-              indicatorClassName="bg-gradient-to-r from-purple-500 to-pink-500"
+              className="h-1 mt-4 bg-white/10 [&>div]:bg-gradient-to-r [&>div]:from-purple-500 [&>div]:to-pink-500"
             />
           </div>
         </header>

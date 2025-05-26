@@ -29,14 +29,28 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
 
-const participants = [
+interface Participant {
+  id: number;
+  name: string;
+  avatar: string | null;
+  isSpeaking: boolean;
+}
+
+interface Message {
+  id: number;
+  sender: string;
+  content: string;
+  time: string;
+}
+
+const participants: Participant[] = [
   { id: 1, name: "Anonymous429", avatar: null, isSpeaking: true },
   { id: 2, name: "HiddenGem", avatar: null, isSpeaking: false },
   { id: 3, name: "MusicProducer92", avatar: null, isSpeaking: false },
   { id: 4, name: "TravelBug", avatar: null, isSpeaking: false },
 ]
 
-const messages = [
+const messages: Message[] = [
   { id: 1, sender: "Anonymous429", content: "Hey everyone! Welcome to the chat.", time: "2:30 PM" },
   { id: 2, sender: "HiddenGem", content: "Thanks for having us!", time: "2:31 PM" },
   {
@@ -48,7 +62,11 @@ const messages = [
   { id: 4, sender: "TravelBug", content: "Can't wait to hear them!", time: "2:34 PM" },
 ]
 
-export function VideoChat({ onClose }) {
+interface VideoChatProps {
+  onClose: () => void;
+}
+
+export function VideoChat({ onClose }: VideoChatProps) {
   const [micEnabled, setMicEnabled] = useState(true)
   const [videoEnabled, setVideoEnabled] = useState(true)
   const [chatOpen, setChatOpen] = useState(false)
@@ -56,8 +74,8 @@ export function VideoChat({ onClose }) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [newMessage, setNewMessage] = useState("")
   const [localMessages, setLocalMessages] = useState(messages)
-  const videoRef = useRef(null)
-  const containerRef = useRef(null)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
   const [videoEffect, setVideoEffect] = useState("none")
   const [brightness, setBrightness] = useState(100)
   const [contrast, setContrast] = useState(100)
@@ -71,9 +89,11 @@ export function VideoChat({ onClose }) {
       navigator.mediaDevices
         .getUserMedia({ video: true, audio: micEnabled })
         .then((stream) => {
-          videoRef.current.srcObject = stream
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream
+          }
         })
-        .catch((err) => {
+        .catch((err: Error) => {
           console.error("Error accessing media devices:", err)
         })
     }
@@ -81,7 +101,7 @@ export function VideoChat({ onClose }) {
     return () => {
       // Clean up video stream
       if (videoRef.current && videoRef.current.srcObject) {
-        const tracks = videoRef.current.srcObject.getTracks()
+        const tracks = (videoRef.current.srcObject as MediaStream).getTracks()
         tracks.forEach((track) => track.stop())
       }
     }
@@ -89,7 +109,7 @@ export function VideoChat({ onClose }) {
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().catch((err) => {
+      containerRef.current?.requestFullscreen().catch((err: Error) => {
         console.error(`Error attempting to enable fullscreen: ${err.message}`)
       })
     } else {
@@ -98,7 +118,7 @@ export function VideoChat({ onClose }) {
     setIsFullscreen(!isFullscreen)
   }
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault()
     if (newMessage.trim()) {
       const message = {
@@ -117,11 +137,11 @@ export function VideoChat({ onClose }) {
     visible: { x: 0, opacity: 1, transition: { type: "spring", damping: 25, stiffness: 300 } },
   }
 
-  const applyVideoEffect = (effect) => {
+  const applyVideoEffect = (effect: string) => {
     setVideoEffect(effect)
   }
 
-  const applyFilter = (filter) => {
+  const applyFilter = (filter: string) => {
     setActiveFilter(filter)
   }
 
@@ -580,7 +600,9 @@ export function VideoChat({ onClose }) {
           <Button
             variant="outline"
             size="icon"
-            className={`rounded-full h-12 w-12 ${chatOpen ? "bg-purple-500/20 border-purple-500/50" : "bg-white/10"}`}
+            className={`rounded-full h-12 w-12 ${
+              chatOpen ? "bg-purple-500/20 border-purple-500/50" : "bg-white/10"
+            }`}
             onClick={() => {
               setChatOpen(!chatOpen)
               setParticipantsOpen(false)

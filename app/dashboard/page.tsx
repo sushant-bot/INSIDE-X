@@ -65,7 +65,7 @@ export default function DashboardPage() {
   const [randomChatOpen, setRandomChatOpen] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const [activeTab, setActiveTab] = useState("feed")
-  const videoRef = useRef(null)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
   const [micEnabled, setMicEnabled] = useState(true)
   const [videoEnabled, setVideoEnabled] = useState(true)
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -208,7 +208,14 @@ export default function DashboardPage() {
   ]
 
   // Function to handle voting
-  const handleVote = (postId, voteType) => {
+  // Interface for vote types
+  interface VoteType {
+    up: 'up';
+    down: 'down';
+  }
+
+  // Function to handle voting
+  const handleVote = (postId: number, voteType: keyof VoteType): void => {
     // In a real app, this would call an API to update the vote
     console.log(`Voted ${voteType} on post ${postId}`)
   }
@@ -229,8 +236,9 @@ export default function DashboardPage() {
 
     // Clean up video stream
     if (videoRef.current && videoRef.current.srcObject) {
-      const tracks = videoRef.current.srcObject.getTracks()
-      tracks.forEach((track) => track.stop())
+      const stream = videoRef.current.srcObject as MediaStream;
+      const tracks = stream.getTracks();
+      tracks.forEach((track) => track.stop());
     }
 
     // After showing summary for a few seconds, close the chat
